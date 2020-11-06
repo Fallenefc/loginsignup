@@ -1,7 +1,13 @@
 const UserModel = require('../models/users');
 const bcrypt = require('bcrypt');
 
-const userSignUp = (req, res) => {
+const userSignUp = async (req, res) => {
+  const userExists = await UserModel.findOne({username: req.body.username});
+  if (userExists) {
+    res.status(403);
+    res.send('Forbidden');
+    return;
+  }
   bcrypt.hash(req.body.password, 10, async (err, hashedPass) => {
     if (err) {
       res.json({
